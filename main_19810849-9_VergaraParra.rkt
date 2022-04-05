@@ -11,7 +11,7 @@
 ;importamos generarCartas, el cuál contiene las funciones que generan el mazo de cartas
 (require "generarCartas_19810849-9_VergaraParra.rkt")
 ;importamos setCartas, archivo con funcionas que comprueban que el set esté bien hecho.
-(require "setCartas_19810849-9_VergaraParra.rkt")
+(require "TDA-cardsSet_19810849-9_VergaraParra.rkt")
 ;importamos modosDeJuego, el cuál contiene las funciones que definen y eligen el modo de juego
 (require "modosDeJuego_19810849-9_VergaraParra.rkt")
 ;

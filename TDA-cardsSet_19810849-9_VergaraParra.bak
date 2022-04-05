@@ -1,0 +1,16 @@
+#lang racket
+;Esta parte del código contiene funciones que buscan resolver problemas relacionados 
+;Resuelve las funcionalidades 2,3,4 y 5 del laboratorio
+(define b(/ 5 5))
+
+
+;REPRESENTACIÓN:
+;(Mes) Int X (Dia) Int X (Año) Int
+
+;CONSTRUCTOR: 
+
+;PERTENENCIA: verifica los datos
+
+;SELECTORES: permiten obtener un dato específico del dato compuesto
+
+;MODIFICADORES: alteran los datos de un elemento específico
