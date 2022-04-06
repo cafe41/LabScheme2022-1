@@ -1,21 +1,24 @@
 #lang racket
-;Esta parte del código contiene funciones que buscan resolver problemas relacionados 
-;Resuelve las funcionalidades 2,3,4 y 5 del laboratorio
-(define b(/ 5 5))
+;Este es el código del TDA "cardsSet", el cuál se refiere al set de cartas del juego dobble. El código además, contiene funciones que ayudarán a manejar el TDA y sus derivados.              
 
+;Importaré la función randomFn como rndFn
+(require "randomFn.rkt")
+(provide (all-defined-out))
 
-;REPRESENTACIÓN:
-;(Mes) Int X (Dia) Int X (Año) Int
+#|REPRESENTACIÓN:
+Elements (list) X numE(int) X maxC(int) X rndFn (fn)
 
-;CONSTRUCTOR:
-#|DOM: Elements (list) X numE(int) X maxC(int) X rndFn (fn)
 Elements: Lista desde donde se puede obtener una muestra de elementos (números, letras, figuras, etc.) para construir el conjunto de cartas.
 numE: Entero positivo que indica la cantidad de elementos esperada en cada carta
 maxC: Entero que indica la cantidad máxima de cartas que se busca generar en el conjunto. Si maxC <=0 se producen todas las cartas posibles para un conjunto válido.
-rndFn: Función de aleatorización que debe garantizar transparencia referencial.
-       Se proporciona función de ejemplo al final del enunciado. Es opcional implementar otra.
-       La función se puede usar internamente para aleatorizar aspectos en la generación de cartas tales como orden de los elementos, tamaño de los elementos, etc.|#
+rndFn: Función de aleatorización que debe garantizar transparencia referencial.|#
+
+
+;CONSTRUCTOR:
+;DOM: list X int X int X function
 ;REC: cardsSet
+;Recursión: No hay
+;Resumen: Esta función crea el set de cartas del juego Dobble, el cuál se usará para otras funciones dentro de "main" y "game"
 #|(define (cardsSet Elements numE maxC rndFn)
 )
 |#

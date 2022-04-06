@@ -1,8 +1,15 @@
 #lang racket
+;Me "robé" la función que dieron como ejemplo, ahí dice que podemos usarla.
+(define m 2147483647)
+(define a 1103515245)
+(define c 12345)
+
 (define randomFn (lambda (xn)
-                   (lambda(a)
-                    (lambda(c)
-                     (lambda(m)
-                   (modulo (+ ( a xn) c) m))))
+                   (modulo (+ (* a xn) c) m)
+                 )
+)
+;Definiré rndFn como la función tambien, ya que así sale en los ejemplos de los TDA
+(define rndFn (lambda (xn)
+                   (modulo (+ (* a xn) c) m)
                  )
 )

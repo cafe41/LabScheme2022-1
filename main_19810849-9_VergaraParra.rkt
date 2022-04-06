@@ -1,17 +1,24 @@
 #lang racket
-;Version hasta la fecha 01/04 del laboratorio en Scheme, con Racket
+; PARADIGMAS DE LA PROGRAMACIÓN
+; SECCIÓN DEL CURSO: 0-B-2
+; PROFESOR DE TEORÍA: VICTOR FLORES
+; PROFESOR DE LABORATORIO: VICTOR FLORES
+;
+; AUTOR
+; NOMBRE: Gustavo Andrés Vergara Parra
+; RUT: 19.810.849-9
+; CARRERA: Ingeniería en Ejecución en Informática
 
 ;-----------IMPORTACIÓN DE TDAs-----------;
-
-
-
+;importamos el TDA game, el cual se encarga de 
+(require "TDA-game_19810849-9_VergaraParra.rkt")
+;importamos cardsSet, archivo que genera el set de cartas y además contiene funcionas que comprueban que el set esté bien hecho.
+(require "TDA-cardsSet_19810849-9_VergaraParra.rkt")
 ;---------IMPORTACIÓN DE FUNCIONES---------;
 ;Importaré archivos de la misma carpeta en donde se encuentra main, ya que asumo que harán "pull" del repositorio con todos los archivos.
-;
+
 ;importamos generarCartas, el cuál contiene las funciones que generan el mazo de cartas
 (require "generarCartas_19810849-9_VergaraParra.rkt")
-;importamos setCartas, archivo con funcionas que comprueban que el set esté bien hecho.
-(require "TDA-cardsSet_19810849-9_VergaraParra.rkt")
 ;importamos modosDeJuego, el cuál contiene las funciones que definen y eligen el modo de juego
 (require "modosDeJuego_19810849-9_VergaraParra.rkt")
 ;
