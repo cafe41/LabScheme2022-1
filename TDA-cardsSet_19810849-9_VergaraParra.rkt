@@ -19,9 +19,13 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
 ;REC: cardsSet
 ;Recursión: No hay
 ;Resumen: Esta función crea el set de cartas del juego Dobble, el cuál se usará para otras funciones dentro de "main" y "game"
-#|(define (cardsSet Elements numE maxC rndFn)
+(define (cardsSet Elements numE maxC rndFn)(
+                    (* rndFN numE maxC)
+
+
+
 )
-|#
+
 
 ;PERTENENCIA: verifica los datos
 ;DOM: Lo que sea
