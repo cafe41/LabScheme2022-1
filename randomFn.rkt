@@ -1,4 +1,6 @@
 #lang racket
+;Esta función será importada a los TDAs y otras funciones.
+(provide (all-defined-out))
 ;Me "robé" la función que dieron como ejemplo, ahí dice que podemos usarla.
 (define m 2147483647)
 (define a 1103515245)
