@@ -3,6 +3,7 @@
 
 ;Importaré la función randomFn como rndFn
 (require "randomFn.rkt")
+(require math/number-theory)
 (provide (all-defined-out))
 
 ;Bibloteca de elementos
@@ -26,35 +27,36 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
 ;REC: cardsSet
 ;Recursión: Natural
 ;Resumen: Esta función crea el set de cartas del juego Dobble, el cuál se usará para otras funciones dentro de "main" y "game"
-(define (cardsSet Elements numE maxC (rndFn(+(length cardsSet)(numE))))(
-        (if(list? cardsSet) (;true
+#;(define (cardsSet Elements numE maxC rndFn)
+        (if(prime? (- numE 1))(
+                            ;true
                             ;llamaré a varios elementos dentro de Elements (a través de un número random)
                             ;luego aplicaré list cuando numE = 0
                             ;y cuando maxC = 0 haré un list a esas list, así tengo una matriz
                             ;planB: hacer una lista de cons
-                    
+
                             ;if
                             (if (not(equal? numE 0));if numE != 0
                                 ;true
-                                (;cons de un elemento de la lista Elements entre 0 y 80
-                                 (cons (list-ref Elements  (modulo(rndFn(+(length cardsSet)(numE)))80)))
-                                 ;la función disminuye numE cada vez que agrega un elemento
-                                 (cardsSet Elements (- numE 1) maxC (rndFn(+(length cardsSet)(numE)))))
+                                ;cons de un elemento de la lista Elements entre 0 y 80
+                                (cons (list-ref Elements (modulo(rndFn(+(length cardsSet)(numE)))80))
+                                ;la función disminuye numE cada vez que agrega un elemento
+                                (cardsSet Elements (- numE 1) maxC (rndFn(+(length cardsSet)(numE)))))
                                 ;false
                                 (if (not(equal? maxC 0));if maxC != 0
                                     ;true
                                     (;si numE llega a 0, se le resta 1 a numC y numE pasa a ser length(cartaHecha)
-                                     (cons null)
-                                     (cardsSet Elements (length (list-ref cardsSet 0)) (- maxC 1) (rndFn(+(length cardsSet)(numE)))))
+                                    null
+                                    (cardsSet Elements (length (car (cardsSet)) (- maxC 1) (rndFn(+(length cardsSet)(numE)))))
                                     ;false
                                     (list cardsSet);enlista todas las listas hasta ahora
                                     )
-                             )
+                                )
                             )
-                           (;false
-                           (display "cardsSet no es una lista o matriz"))
-      ))
-)
+                           ;false
+                           (error "El orden no es primo, por favor ingrese un numero de elementos válido")
+      )
+))
 
 ;PERTENENCIA: verifica los datos
 ;DOM: Lo que sea
@@ -68,3 +70,58 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
 
 ;OTRAS FUNCIONES:
 
+;calcularOrden
+;DOM: int
+;REC: Orden (int)
+;Recursión: No hay
+;Resumen: Calcula el orden (n) 
+(define (calcularOrden numE)
+    (if (integer? numE);Ya que el numero de elementos es n+1, siendo n el orden
+        ;true
+        (- numE 1)
+        ;false
+        (error "numE no es un int"))
+)
+
+;DOM: list X int X function
+;REC: PrimeraCarta (list)
+;Recursión: Natural
+;Resumen: Esta función crea la primera carta del set, en base a la cuál se harán las demás (a menos que solo sea necesaria una)
+(define (crearPrimeraCarta Elements numE rndFn)
+;es un ciclo de conds, donde si numE llega a 0, retorna un null, devolviendo una lista
+  (if (not(equal? numE 0))
+      ;true
+      (cons (list-ref Elements (modulo(rndFn numE)(length Elements)))
+      (crearPrimeraCarta Elements (- numE 1) rndFn))
+      ;false
+      null
+  )
+)
+
+;DOM: list X list X int X int
+;REC: cartaN (list)
+;Recursión: Natural
+;Resumen: Esta función crea n número de cartas, compartiendo el primer elemento de la primera carta creada
+(define (crearCartaN Elements pCarta numE i);i irá sumandose a las variables para dar el resto de números '(1 5 6 7)'(1 8 9 10), etc...
+;//then we build the next n number of cards
+;for (j=1; j<=n; j++) {
+ ;card = []
+ ;card.push(1)
+    ;for (k=1; k<=n; k++) {
+    ;   card.push(n * j + (k+1))
+    ;}
+    ;cards.push(card)
+;}
+  ;j = maxC-1
+  ;
+(if (not(equal? numE (numE 0)));if numE != 0
+        ;true
+        ;cons de un elemento de la lista Elements entre 0 y 80
+        (cons (list-ref Elements (modulo(rndFn(+(length crearCartaN)(numE)))80))
+        ;la función disminuye numE cada vez que agrega un elemento
+        (crearCartaN Elements (- numE 1) (rndFn(+(length crearCartaN)(numE)))))
+
+        ;false ;Agrega el primer elemento de la primera carta
+        (cons (car(pCarta)) null)
+        )
+) 
