@@ -40,6 +40,7 @@ players: lista con los nombres de los jugadores.|#
   )
 )
 ;SELECTORES: permiten obtener un dato específico del dato compuesto
+
 (define (getNumPlayers game)
   (if (game? game)
       ;true
@@ -67,7 +68,6 @@ players: lista con los nombres de los jugadores.|#
       )
 )
 
-
 ;MODIFICADORES: alteran los datos de un elemento específico
 
 
@@ -89,7 +89,7 @@ players: lista con los nombres de los jugadores.|#
 ;DOM: str X game (lista con el estado del juego actual)
 ;REC: game (list de lists)
 ;Recursión: No hay
-;Resumen: Registra un jugador en game
+;Resumen: Registra un jugador en game, si no se ha excedido la cantidad máxima de jugadores.
 (define (register user game)
   (if (not(<= (length game) 2));si el largo de game es menor o igual a 2:
       ;true
@@ -108,7 +108,78 @@ players: lista con los nombres de los jugadores.|#
 ;DOM: game (list de list)
 ;REC: str
 ;Recursión: No hay
-#;(define (whoseTurnIsIt? game)(
+;Resumen: Retorna el nombre (previamente registrado) del jugador al que le toca jugar.
+(define (whoseTurnIsIt? game)
+  (car(getPlayers game)))
 
-                              )
+;play
+;DOM: game (list de lists) X action (fn)
+;REC: game (list de lists)
+;Recursión: 
+;Resumen:
+#;(define 
 )
+
+;strList
+;DOM: lista (con strings)
+;REC: string
+;Recursión: Natural
+;Resumen: Transforma una lista de strings a un string gigante
+(define (strList lista)
+  (if(not(equal? 0 (length lista)));si el largo de la lista es distinto de 0
+     ;true
+     (string-append " " (string-append (car lista) (strList (cdr lista))))
+     ;false
+     ""
+   )
+)
+;strMatriz
+;DOM: list de lists
+;REC: string
+;Recursión: Natural
+;Resumen:
+(define (strMatriz lista)
+  (if(not(equal? 0 (length lista)));si el largo de la lista es distinto de 0
+     ;true
+     (string-append " " (string-append (string-append(string-append "(" (strList(car lista)))")") (strMatriz (cdr lista))))
+     ;false
+     ""
+   )
+)
+
+
+
+;status
+;DOM: game
+;REC: string
+;Recursión: No hay
+;Resumen: Esta función entrega un string con el estado actual del juego, a este string se le puede hacer display.
+(define (status game)
+  (string-append "El estado actual del juego es: \n"
+                 (string-append "Mazo de cartas:"
+                 (string-append (strMatriz (getCardsSet game))
+                 (string-append ",\n"
+                 (string-append "Número de jugadores: "
+                 (string-append (number->string (getNumPlayers game))
+                 (string-append ",\n"
+                 (string-append "Jugadores en la partida: "
+                 (string-append (strList (getPlayers game)))))))))))
+)
+
+;
+;DOM:
+;REC:
+;Recursión:
+;Resumen:
+
+;
+;DOM:
+;REC:
+;Recursión:
+;Resumen:
+
+;
+;DOM:
+;REC:
+;Recursión:
+;Resumen:
