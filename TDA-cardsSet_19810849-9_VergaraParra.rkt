@@ -83,6 +83,38 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
         (error "numE no es un int"))
 )
 
+(define L1 (list 1 2 3 4 5 6 7 8 9 10 11 12 13))
+
+
+
+(define (PrimeraCarta L1 numE n)
+    (if (= n numE)
+        null
+        (cons (car L1) (PrimeraCarta (cdr L1) numE (+ n 1)))
+      )
+ )
+
+(define Carta1 (PrimeraCarta L1 4 0))
+
+
+(define (nCartas Carta1 listaCartasN i L1)
+   (if (eq? (length Carta1) (+(length listaCartasN)1))
+       listaCartasN
+       (nCartas Carta1 (cons (crearCarta (cdr Carta1) i L1 (list (car Carta1)))
+                             listaCartasN)
+                (+ (- i 1) (length Carta1)) L1)))
+
+
+(define (crearCarta Carta1 i L1 cartaN)
+   (if (null? Carta1)
+       cartaN
+       (crearCarta (cdr Carta1) (+ i 1) L1
+                   (cons (list-ref L1 i)cartaN))))
+
+
+
+(define Cartas (cons Carta1 (nCartas Carta1 '() 4 L1)))
+
 ;DOM: list X int X function
 ;REC: PrimeraCarta (list)
 ;Recursión: Natural
@@ -91,18 +123,18 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
 ;es un ciclo de conds, donde si numE llega a 0, retorna un null, devolviendo una lista
   (if (not(equal? numE 0))
       ;true
-      (cons (list-ref Elements (modulo(rndFn numE)(length Elements)))
+      (cons (list-ref Elements numE)
       (crearPrimeraCarta Elements (- numE 1) rndFn))
       ;false
       null
   )
 )
 
-;DOM: list X list X int X int
+;DOM: list X list X int X int X procedure
 ;REC: cartaN (list)
 ;Recursión: Natural
 ;Resumen: Esta función crea n número de cartas, compartiendo el primer elemento de la primera carta creada
-(define (crearCartaN Elements pCarta numE i);i irá sumandose a las variables para dar el resto de números '(1 5 6 7)'(1 8 9 10), etc...
+(define (crearCartaN Elements pCarta numE i rndFn);i irá sumandose a las variables para dar el resto de números '(1 5 6 7)'(1 8 9 10), etc...
 ;//then we build the next n number of cards
 ;for (j=1; j<=n; j++) {
  ;card = []
@@ -113,15 +145,13 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
     ;cards.push(card)
 ;}
   ;j = maxC-1
-  ;
-(if (not(equal? numE (numE 0)));if numE != 0
-        ;true
-        ;cons de un elemento de la lista Elements entre 0 y 80
-        (cons (list-ref Elements (modulo(rndFn(+(length crearCartaN)(numE)))80))
-        ;la función disminuye numE cada vez que agrega un elemento
-        (crearCartaN Elements (- numE 1) (rndFn(+(length crearCartaN)(numE)))))
-
-        ;false ;Agrega el primer elemento de la primera carta
-        (cons (car(pCarta)) null)
+  
+(if (not(equal? numE 0));if numE != 0
+    ;true
+    (cons (list-ref Elements (+ numE i))
+          (crearCartaN Elements pCarta (- numE 1) i rndFn))
+    ;false
+    ;Agrega el primer elemento de la primera carta
+    (cons (car pCarta) null)
         )
-) 
+)

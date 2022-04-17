@@ -8,44 +8,107 @@
 (provide (all-defined-out))
 
 #|REPRESENTACIÓN:
-numPlayers(int) X cardsSet X mode (fn) X rndFn (fn)
 
+
+numPlayers(int) X cardsSet (list) X Players (list)
 numPlayers: Entero que señala la cantidad de jugadores.
 cardsSet: Conjunto válido de cartas
-mode: Función que permite internamente determinar el modo de juego, la forma en que se ejecutan los turnos, repartición de cartas, etc.
-rndFn: Función de aleatorización que debe garantizar transparencia referencial.|#
+players: lista con los nombres de los jugadores.|#
 
 
 ;CONSTRUCTOR:
-;DOM: integer X list X function X function
-;REC: game
+;DOM: int X list X function X function
+;REC: game (list)
 ;Recursión: No hay
 ;Resumen: Debe construir la función "game", la cual corresponde a la estructura que alberga el área de juego, las piezas disponibles, jugadores registrados, sus cartas y el estado del juego, entre otros elementos
-
-#|(define (game numPlayers (cardsSet('() A B C)) mode rndFn)
-)
-|#
+(define (game numPlayers cardsSet stackMode randomFn)
+        (list numPlayers cardsSet '()))
 
 ;PERTENENCIA:
-;DOM: Lista con elementos
+;DOM: elementos
 ;REC: Boolean
 ;Recursión: Ninguna
 ;Resumen: Verifica que los elementos de lo que sea que hayan pasado como Dominio cumplan con el del TDA.
 (define (game? elementos)
   (if (and
-      (list? elementos)
       (integer?   (car elementos))
-      (list?      (car(cdr elementos)))
-      (procedure? (car(cdr(cdr elementos))))
-      (procedure? (car(cdr(cdr(cdr elementos)))))
+      (list?      (cadr elementos))
+      (list?      (caddr elementos))
       )
       #true
       #false
   )
 )
-
 ;SELECTORES: permiten obtener un dato específico del dato compuesto
+(define (getNumPlayers game)
+  (if (game? game)
+      ;true
+      (car game)
+      ;false
+      -1
+      )
+)
+
+(define (getCardsSet game)
+  (if (game? game)
+      ;true
+      (cadr game)
+      ;false
+      '()
+      )
+)
+
+(define (getPlayers game)
+  (if (game? game)
+      ;true
+      (caddr game)
+      ;false
+      '()
+      )
+)
+
 
 ;MODIFICADORES: alteran los datos de un elemento específico
 
+
 ;OTRAS FUNCIONES:
+
+;stackMode
+;DOM: cardsSet
+;REC: cardsSet
+;Recursión: No hay
+;Resumen: Función que permite "retirar y voltear" las dos cartas superiores del stack de cartas en el juego y las dispone en el área de juego.
+(define (stackMode cardsSet)
+  (if (list? cardsSet);Si nos entregan otra cosa distinta a una lista, dará el error
+        ;true
+        (cdr(cdr cardsSet))
+        ;false
+        (error "cardsSet no es una lista de cartas")))
+
+;register
+;DOM: str X game (lista con el estado del juego actual)
+;REC: game (list de lists)
+;Recursión: No hay
+;Resumen: Registra un jugador en game
+(define (register user game)
+  (if (not(<= (length game) 2));si el largo de game es menor o igual a 2:
+      ;true
+      (if (not(>=(length(list-ref game 2))(list-ref game 0)));si la cantidad de jugadores registrados es menor que la de jugadores
+          ;true
+          (list (getNumPlayers game)(getCardsSet game)(append (list-ref game 2) (list user)))
+          ;false
+          (error "Se ha registrado el máximo de jugadores")
+      )
+      ;false
+      (append game (list(list user)))
+      )
+)
+
+;whoseTurnIsIt?
+;DOM: game (list de list)
+;REC: str
+;Recursión: No hay
+#;(define (whoseTurnIsIt? game)(
+
+                              )
+)
