@@ -155,21 +155,68 @@ jugando: si el juego está en marcha será 1, sino 0.|#
 (define (pass )
   (null))
 
+;mayorPuntaje
+
 ;ganador?
-(define (ganador? game);ciclo donde compara el car con el cadr, ve cuál es mayor y lo "retorna"
-  (getPlayers game)
+(define (ganador? game)
+  (if (equal? (length(getPlayers game)) 2)
+      ;true
+      null ;(not(equal? ()())getPlayers game)
+      ;false
+      null
+      )
 )
+
+;listaPuntajes
+;DOM: list (lista con jugadores)
+;REC: list (lista con puntajes)
+;Recursión: natural
+;Resumen: Recibe una lista con jugadores y "retorna" una lista con puntajes
+(define (listaPuntajes lista)
+  (if (null? lista)
+      ;true
+      null
+      ;false
+      (cons (string->number(car(cdr (car lista)))) (listaPuntajes (cdr lista))) 
+      )
+)
+;
+(define puntajes
+  (listaPuntajes '(("Pedro" "3")("Juan" "3")("Diego" "2"))))
+
+;ganadores?
+(define (ganadores? lista)
+  (getWinners lista (MaxValue lista))
+)
+
+;getWinners
+(define (getWinners lista ganador)
+  (if (null? lista)
+      ;true
+      null
+      ;false
+      (if (equal? (string->number(cadar lista)) (string->number(cadr ganador)))
+          ;true
+          (cons (car lista) (getWinners (cdr lista) ganador))
+          ;false
+          (getWinners (cdr lista) ganador)
+      ))
+)
+
+(define (MaxValue lista)
+    (mayor lista '("" "0")))
+;
+(define (mayor lista max)
+    (if (null? lista)
+      max
+      (if (< (string->number(cadr max)) (string->number(cadar lista)))
+        (mayor (cdr lista) (car lista))
+        (mayor (cdr lista) max))))
 
 ;empate?
-(define (empate? a b)
-  (if (= a b) #t #f)
+(define (empate? lista)
+  null
 )
-
-;perdedor?
-
-;doFirst
-(define (doFirst first second)
-  first)
 
 ;finish
 ;DOM:
@@ -177,13 +224,15 @@ jugando: si el juego está en marcha será 1, sino 0.|#
 ;Recursión:
 ;Resumen:
 (define (finish game)
-  (doFirst (list (getNumPlayers game) (getCardsSet game)(getPlayers game)(getPartida game))
+   (list (getNumPlayers game) (getCardsSet game)(getPlayers game)(getPartida game)
         (if(not(equal? (getPlayers game)'()))
            ;true
            (null)
            ;false
-           (printf "El ganador es: ~a con ~a puntos." )))
+           (printf "El ganador es: ~a con ~a puntos.")))
 )
+
+
 ;play
 ;DOM: game (list de lists) X action (fn)
 ;REC: game (list de lists)
