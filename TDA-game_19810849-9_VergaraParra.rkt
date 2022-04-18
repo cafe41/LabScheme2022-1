@@ -9,11 +9,12 @@
 
 #|REPRESENTACIÓN:
 
+numPlayers(int) X cardsSet(list) X Players(list) X jugando(int)
 
-numPlayers(int) X cardsSet (list) X Players (list)
 numPlayers: Entero que señala la cantidad de jugadores.
 cardsSet: Conjunto válido de cartas
-players: lista con los nombres de los jugadores.|#
+players: lista con los nombres de los jugadores y sus respectivos puntajes
+jugando: si el juego está en marcha será 1, sino 0.|#
 
 
 ;CONSTRUCTOR:
@@ -22,7 +23,8 @@ players: lista con los nombres de los jugadores.|#
 ;Recursión: No hay
 ;Resumen: Debe construir la función "game", la cual corresponde a la estructura que alberga el área de juego, las piezas disponibles, jugadores registrados, sus cartas y el estado del juego, entre otros elementos
 (define (game numPlayers cardsSet stackMode randomFn)
-        (list numPlayers cardsSet '()))
+        (list numPlayers cardsSet '() 1)
+)
 
 ;PERTENENCIA:
 ;DOM: elementos
@@ -34,6 +36,7 @@ players: lista con los nombres de los jugadores.|#
       (integer?   (car elementos))
       (list?      (cadr elementos))
       (list?      (caddr elementos))
+      (integer?   (cadddr elementos))
       )
       #true
       #false
@@ -41,6 +44,10 @@ players: lista con los nombres de los jugadores.|#
 )
 ;SELECTORES: permiten obtener un dato específico del dato compuesto
 
+;Dom: game(list)
+;Rec: int
+;Recursión: no hay
+;Resumen: Entrega el número de jugadores en game
 (define (getNumPlayers game)
   (if (game? game)
       ;true
@@ -50,6 +57,10 @@ players: lista con los nombres de los jugadores.|#
       )
 )
 
+;Dom: game(list)
+;Rec: list de lists
+;Recursión: no hay
+;Resumen: Entrega el mazo de cartas en game
 (define (getCardsSet game)
   (if (game? game)
       ;true
@@ -59,12 +70,29 @@ players: lista con los nombres de los jugadores.|#
       )
 )
 
+;Dom: game(list)
+;Rec: list de lists
+;Recursión: no hay
+;Resumen: Entrega el nombre de los jugadores y su puntaje en game
 (define (getPlayers game)
   (if (game? game)
       ;true
       (caddr game)
       ;false
       '()
+      )
+)
+
+;Dom: game(list)
+;Rec: int
+;Recursión: no hay
+;Resumen: Entrega un 0 si el juego terminó o un 1 si sigue en pie.
+(define (getPartida game)
+  (if (game? game)
+      ;true
+      (cadddr game)
+      ;false
+      -1
       )
 )
 
@@ -95,7 +123,7 @@ players: lista con los nombres de los jugadores.|#
       ;true
       (if (not(>=(length(list-ref game 2))(list-ref game 0)));si la cantidad de jugadores registrados es menor que la de jugadores
           ;true
-          (list (getNumPlayers game)(getCardsSet game)(append (list-ref game 2) (list user)))
+          (list (getNumPlayers game)(getCardsSet game)(append (list-ref game 2) (list(list user "0"))))
           ;false
           (error "Se ha registrado el máximo de jugadores")
       )
@@ -112,12 +140,36 @@ players: lista con los nombres de los jugadores.|#
 (define (whoseTurnIsIt? game)
   (car(getPlayers game)))
 
+
+(define (spotIt x)
+  (+ x 1))
+(define (pass x)
+  (+ x 1))
+(define (finish x)
+  (+ x 1))
 ;play
 ;DOM: game (list de lists) X action (fn)
 ;REC: game (list de lists)
 ;Recursión: 
 ;Resumen:
-#;(define 
+(define (play game action)
+  (cond
+    [(= action spotIt) (spotIt game)]
+    [(= action pass)
+     (
+
++ 3 2
+
+      )]
+    [(= action finish);Terminado e indicando ganador/perdedor/empate. Luego de finish no se puede continuar la partida.
+     (
+
++ 4 5
+
+
+      )]
+    [(= action null) null]
+    [else "Ingrese una acción válida"])
 )
 
 ;strList
@@ -130,7 +182,7 @@ players: lista con los nombres de los jugadores.|#
      ;true
      (string-append " " (string-append (car lista) (strList (cdr lista))))
      ;false
-     ""
+     " "
    )
 )
 ;strMatriz
@@ -147,8 +199,6 @@ players: lista con los nombres de los jugadores.|#
    )
 )
 
-
-
 ;status
 ;DOM: game
 ;REC: string
@@ -162,8 +212,10 @@ players: lista con los nombres de los jugadores.|#
                  (string-append "Número de jugadores: "
                  (string-append (number->string (getNumPlayers game))
                  (string-append ",\n"
-                 (string-append "Jugadores en la partida: "
-                 (string-append (strList (getPlayers game)))))))))))
+                 (string-append "Jugadores en la partida:"
+                 (string-append (strMatriz (getPlayers game))
+                 (string-append ",\n"
+                 (string-append (if (=(getPartida game) 0) "La partida ha terminado" "La partida sigue en pie"))))))))))))
 )
 
 ;
