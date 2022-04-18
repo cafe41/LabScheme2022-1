@@ -140,13 +140,50 @@ jugando: si el juego está en marcha será 1, sino 0.|#
 (define (whoseTurnIsIt? game)
   (car(getPlayers game)))
 
+;spotIt
+;DOM:
+;REC:
+;Recursión:
+;Resumen: Función que corresponde a la acción spotIt de la función play
+(define (spotIt )(null))
 
-(define (spotIt x)
-  (+ x 1))
-(define (pass x)
-  (+ x 1))
-(define (finish x)
-  (+ x 1))
+;pass
+;DOM:
+;REC:
+;Recursión:
+;Resumen:
+(define (pass )
+  (null))
+
+;ganador?
+(define (ganador? game);ciclo donde compara el car con el cadr, ve cuál es mayor y lo "retorna"
+  (getPlayers game)
+)
+
+;empate?
+(define (empate? a b)
+  (if (= a b) #t #f)
+)
+
+;perdedor?
+
+;doFirst
+(define (doFirst first second)
+  first)
+
+;finish
+;DOM:
+;REC:
+;Recursión:
+;Resumen:
+(define (finish game)
+  (doFirst (list (getNumPlayers game) (getCardsSet game)(getPlayers game)(getPartida game))
+        (if(not(equal? (getPlayers game)'()))
+           ;true
+           (null)
+           ;false
+           (printf "El ganador es: ~a con ~a puntos." )))
+)
 ;play
 ;DOM: game (list de lists) X action (fn)
 ;REC: game (list de lists)
@@ -154,21 +191,10 @@ jugando: si el juego está en marcha será 1, sino 0.|#
 ;Resumen:
 (define (play game action)
   (cond
-    [(= action spotIt) (spotIt game)]
-    [(= action pass)
-     (
-
-+ 3 2
-
-      )]
-    [(= action finish);Terminado e indicando ganador/perdedor/empate. Luego de finish no se puede continuar la partida.
-     (
-
-+ 4 5
-
-
-      )]
-    [(= action null) null]
+    [(equal? action spotIt)  (spotIt game)] ;función currificada para realizar la comparación entre las cartas volteadas a partir del elemento indicado por el usuario. Luego de esta función se contempla cambio de turno
+    [(equal? action pass)      (pass game)] ;función que permite pasar el turno, procurando volver las cartas a su sitio de acuerdo a la modalidad de juego.
+    [(equal? action finish)  (finish game)] ;Terminado e indicando ganador/perdedor/empate. Luego de finish no se puede continuar la partida.
+    [(equal? action null)(list (getNumPlayers game) (getCardsSet game)(getPlayers game)(getPartida game))] ;solo se hace el volteo inicial de cartas según la modalidad de juego activa y no se pasa el turno.
     [else "Ingrese una acción válida"])
 )
 
@@ -185,6 +211,7 @@ jugando: si el juego está en marcha será 1, sino 0.|#
      " "
    )
 )
+
 ;strMatriz
 ;DOM: list de lists
 ;REC: string
