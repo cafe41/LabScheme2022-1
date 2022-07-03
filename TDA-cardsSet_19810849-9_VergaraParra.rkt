@@ -6,7 +6,7 @@
 (require math/number-theory)
 (provide (all-defined-out))
 
-;Bibloteca de elementos
+;Bibloteca de elementos (con la que realizaré pruebas)
 (define elements(list "!" "E1" "#" "E2" "$"  "E3" "%" "E4" "/" "E5" "E6" "E7" "E8" "E9" "E10" ")"
                       "E11" "(" "E12" "E13" "E14" "E15" "E16" "E17" "E18" "E19" "E20" "E21" "E22"
                       "E23" "E24" "E25" "E26" "E28" "E29" "E30" "/&" "#$" "!¡!¡" "?¿" "¿?" "¿" "¡"
@@ -28,32 +28,38 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
 ;Recursión: Natural
 ;Resumen: Esta función crea el set de cartas del juego Dobble, el cuál se usará para otras funciones dentro de "main" y "game"
 (define (cardsSet Elements numE maxC rndFn)
-        (if(prime? (calcularOrden numE))
-                            ;true
-                            (if (equal? maxC 1)
-                                ;true
-                                (cons (crearPrimeraCarta Elements numE) null)
-                                ;false
-                                ;//then we build the next n number of cards
-                                ;for (j=1; j<=n; j++) {
-                                    ;card = []
-                                    ;crearCartaN
-                                    ;cards.push(card)
-                                ;}
-
-                                ;//finally we build the next n2 number of cards
-                                ;for (i= 1; i<=n; i++) {
-                                   ;for (j=1; j<=n; j++) {
-                                      ;card = []
-                                      ;crearCartaN2
-                                      ;cards.push(card)
-                                   ;}
-                                ;}
-                                (display "WIP")
-                            )
-                            ;false
-                            (error "El orden no es primo, por favor ingrese un numero de elementos válido")               
-           )
+  (if (<= maxC (length(append (list(crearPrimeraCarta Elements 1 (calcularOrden numE)))
+                            (cicloCartasN Elements (list-ref Elements 1) (calcularOrden numE) 1 1)
+                            (cicloCartasN2 Elements (calcularOrden numE) 1 1 1))))
+                    ;true
+                    (if (equal? maxC 1)
+                        ;true
+                        (cons (cadrRecursivo maxC  (append (list(crearPrimeraCarta Elements 1 (calcularOrden numE)))
+                            (cicloCartasN Elements (list-ref Elements 1) (calcularOrden numE) 1 1)
+                            (cicloCartasN2 Elements (calcularOrden numE) 1 1 1))) null)
+                        ;false
+                        (cons (cadrRecursivo maxC (append (list(crearPrimeraCarta Elements 1 (calcularOrden numE)))
+                                                          ;//then we build the next n number of cards
+                                                          ;for (j=1; j<=n; j++) {
+                                                          ;card = []
+                                                          ;crearCartaN
+                                                          ;cards.push(card)
+                                                          ;}
+                                                          (cicloCartasN Elements (list-ref Elements 1) (calcularOrden numE) 1 1)
+                                                          ;//finally we build the next n2 number of cards
+                                                          ;for (i= 1; i<=n; i++) {
+                                                          ;for (j=1; j<=n; j++) {
+                                                          ;card = []
+                                                          ;crearCartaN2
+                                                          ;cards.push(card)
+                                                          ;}
+                                                          ;}                
+                                                          (cicloCartasN2 Elements (calcularOrden numE) 1 1 1)))
+                              (cardsSet Elements numE (- maxC 1) rndFn))
+                        )
+                    ;false
+                    (display "pidió más cartas de las que puede generar\n")
+                    )
 )
 
 ;PERTENENCIA: verifica los datos
@@ -81,27 +87,44 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
         (error "numE no es un int"))
 )
 
+;crearPrimeraCarta
 ;DOM: list X int
 ;REC: PrimeraCarta (list)
 ;Recursión: Natural
 ;Resumen: Esta función crea la primera carta del set, en base a la cuál se harán las demás (a menos que solo sea necesaria una)
-(define (crearPrimeraCarta Elements numE)
-;es un ciclo de conds, donde si numE llega a 0, retorna un null, devolviendo una lista
-  (if (not(equal? numE 0))
+(define (crearPrimeraCarta Elements iterador n)
+;es un ciclo de conds, donde si se cumple el falso, retorna un null, devolviendo una lista
+  (if (<= iterador (+ n 1));numE = n + 1
       ;true
-      (cons (list-ref Elements numE)
-      (crearPrimeraCarta Elements (- numE 1)))
+      (cons (list-ref Elements iterador)
+      (crearPrimeraCarta Elements (+ iterador 1) n))
       ;false
       null
   )
 )
 
+;cicloCartasN
+;DOM: list X str X int X int X int
+;REC: list(list)
+;Recursión: Natural
+;Resumen: función que llama a "crearCrataN" de forma recursiva, para crear todas las cartasN (cantidad cartas = n)
+(define (cicloCartasN Elements elementoPC n j k)
+  ;Cuclo de j hasta n
+  (if (< j n)
+      ;true 
+      (cons  (crearCartaN Elements elementoPC n j k) (cicloCartasN Elements elementoPC n (+ j 1) k))
+      ;false (caso base)
+      (cons  (crearCartaN Elements elementoPC n j k) null) ;card.push(1)
+      )
+)
+
+;crearCartaN
 ;DOM: list X int X int X int X int
 ;REC: cartaN (list)
 ;Recursión: Natural
 ;Resumen: Esta función crea cartas "n", compartiendo el primer elemento de la primera carta creada
 (define (crearCartaN Elements elementoPC n j k);i irá sumandose a las variables para dar el resto de números '(1 5 6 7)'(1 8 9 10), etc...
-(if (not(equal? n k));if numE != 0
+(if (<= k n);if numE != 0
     ;true
     ;for (k=1; k<=n; k++) {
        ;card.push(n * j + (k+1))
@@ -112,24 +135,60 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
     ;Agrega el primer elemento de la primera carta (elementoPC)
     ;card.push(1)
     (cons elementoPC null)
-        )
+    )
 )
 
+;cicloCartasN2
+;DOM: list X int X int X int X int
+;REC: list(list)
+;Recursión: Natural
+;Resumen: Esta función llama a la función crea "cartasN^2" de forma recursiva, para crear una lista con estas cartas
+(define (cicloCartasN2 Elements n i j k)
+  ;Ciclo de i hasta n
+  (if (<= i n)
+      ;true
+      ;Ciclo de j hasta n
+      (if (< j n)
+          ;true 
+          (cons  (crearCartaN2 Elements n i j k) (cicloCartasN2 Elements n i (+ j 1) k))
+          ;false (caso base)
+          (cons  (crearCartaN2 Elements n i j k) (cicloCartasN2 Elements n (+ i 1) 1 1))
+          )
+      ;false
+      null
+      )
+)
+
+;crearCartaN2
 ;DOM: list X int X int X int X int X procedure
 ;REC: cartaN2 (list)
 ;Recursión: Natural
 ;Resumen: Esta función crea cartas "n^2", a través de un par de ciclos recursivos
-(define (crearCartaN2 Elements n i j k rndFn)
-(if (not(equal? n k));if numE != 0
-    ;true
-    ;for (k=1; k<= n; k++) {
-       ;card.push(n+2+n*(k-1)+(((i-1)*(k-1)+j-1) % n))
-    ;}
-    (cons (list-ref Elements (+ (modulo (+(* (- i 1)(- k 1))(- j 1)) n)(*(+ n 2 n)(- k 1))))
-          (crearCartaN Elements n i j (+ k 1) rndFn))
-    ;false
-    ;Agrega el primer elemento de la carta
-    ;card.push(i+1)
-    (cons (+ i 1) null)
-    )
+(define (crearCartaN2 Elements n i j k)
+  (if (<= k n);if numE != 0
+      ;true
+      ;for (k=1; k<= n; k++) {
+      ;card.push(n+2+n*(k-1)+(((i-1)*(k-1)+j-1) % n))
+      ;}
+      (cons (list-ref Elements (+ (modulo (+(* (- i 1)(- k 1))(- j 1)) n)(+(+ n 2)(* n(- k 1)))))
+            (crearCartaN2 Elements n i j (+ k 1)))
+      ;false
+      ;Agrega el primer elemento de la carta
+      ;card.push(i+1)
+      (cons (list-ref Elements (+ i 1)) null)
+   )
+)
+
+;cadrRecursivo
+;DOM: int X list
+;REC: elemento de una lista
+;Recursión: Natural
+;Resumen: Función que aplica un cdr de forma recursiva y luego un car
+(define (cadrRecursivo num list)
+      (if (equal? num 1)
+          ;true
+          (car list)
+          ;false
+          (cadrRecursivo (- num 1) (cdr list))
+      )
 )
