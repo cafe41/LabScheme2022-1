@@ -28,41 +28,45 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
 ;Recursión: Natural
 ;Resumen: Esta función crea el set de cartas del juego Dobble, el cuál se usará para otras funciones dentro de "main" y "game"
 (define (cardsSet Elements numE maxC rndFn)
-  (if (<= maxC (length(append (list(crearPrimeraCarta Elements 1 (calcularOrden numE)))
-                            (cicloCartasN Elements (list-ref Elements 1) (calcularOrden numE) 1 1)
-                            (cicloCartasN2 Elements (calcularOrden numE) 1 1 1))))
-                    ;true
-                    (if (equal? maxC 1)
-                        ;true
-                        (cons (cadrRecursivo maxC  (append (list(crearPrimeraCarta Elements 1 (calcularOrden numE)))
-                            (cicloCartasN Elements (list-ref Elements 1) (calcularOrden numE) 1 1)
-                            (cicloCartasN2 Elements (calcularOrden numE) 1 1 1))) null)
-                        ;false
-                        (cons (cadrRecursivo maxC (append (list(crearPrimeraCarta Elements 1 (calcularOrden numE)))
-                                                          ;//then we build the next n number of cards
-                                                          ;for (j=1; j<=n; j++) {
-                                                          ;card = []
-                                                          ;crearCartaN
-                                                          ;cards.push(card)
-                                                          ;}
-                                                          (cicloCartasN Elements (list-ref Elements 1) (calcularOrden numE) 1 1)
-                                                          ;//finally we build the next n2 number of cards
-                                                          ;for (i= 1; i<=n; i++) {
-                                                          ;for (j=1; j<=n; j++) {
-                                                          ;card = []
-                                                          ;crearCartaN2
-                                                          ;cards.push(card)
-                                                          ;}
-                                                          ;}                
-                                                          (cicloCartasN2 Elements (calcularOrden numE) 1 1 1)))
-                              (cardsSet Elements numE (- maxC 1) rndFn))
-                        )
-                    ;false
-                    (display "Pidió más cartas de las que puede generar con esa cantidad de elementos.\n")
-                    )
+  (if (not (equal? maxC -1))
+      ;true
+      (if (<= maxC (length(append (list(crearPrimeraCarta Elements 1 (calcularOrden numE)))
+                                  (cicloCartasN Elements (list-ref Elements 1) (calcularOrden numE) 1 1)
+                                  (cicloCartasN2 Elements (calcularOrden numE) 1 1 1))))
+          ;true
+          (if (equal? maxC 1)
+              ;true
+              (cons (cadrRecursivo maxC  (append (list(crearPrimeraCarta Elements 1 (calcularOrden numE)))
+                                                 (cicloCartasN Elements (list-ref Elements 1) (calcularOrden numE) 1 1)
+                                                 (cicloCartasN2 Elements (calcularOrden numE) 1 1 1))) null)
+              ;false
+              (cons (cadrRecursivo maxC (append (list(crearPrimeraCarta Elements 1 (calcularOrden numE)))
+                                                ;//then we build the next n number of cards
+                                                ;for (j=1; j<=n; j++) {
+                                                ;card = []
+                                                ;crearCartaN
+                                                ;cards.push(card)
+                                                ;}
+                                                (cicloCartasN Elements (list-ref Elements 1) (calcularOrden numE) 1 1)
+                                                ;//finally we build the next n2 number of cards
+                                                ;for (i= 1; i<=n; i++) {
+                                                ;for (j=1; j<=n; j++) {
+                                                ;card = []
+                                                ;crearCartaN2
+                                                ;cards.push(card)
+                                                ;}
+                                                ;}                
+                                                (cicloCartasN2 Elements (calcularOrden numE) 1 1 1)))
+                    (cardsSet Elements numE (- maxC 1) rndFn))
+              )
+          ;false
+          (display "Pidió más cartas de las que puede generar con esa cantidad de elementos.\n")
+          )
+      ;false
+      (cardsSet Elements numE (+ (* (calcularOrden numE) (calcularOrden numE)) (calcularOrden numE) 1) rndFn))
 )
 ;Ejemplos de uso:
-      ;(cardsSet '("0" "1" "2" "3") 2 3 rndFn)
+      ;(cardsSet (list "0" "A" "B" "C") 2 -1 randomFn)
       ;(cardsSet elements 3 7 rndFn)
       ;(cardsSet elements 3 10 rndFn)
 
@@ -278,11 +282,110 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
       ;
       ;
 
-;dobble?
-;DOM: cardsSet
-;REC: boolean
+;numCards
+;DOM: 
+;REC: 
+;Recursión: No posee recursión.
+;Resumen: Permite determinar la cantidad de cartas en el set.
+(define (numCards cardsSet)
+  (length cardsSet))
+;Ejemplos de uso:
+      ;(numCards(cardsSet '("0" "1" "2" "3") 2 3 rndFn))
+      ;(numCards(cardsSet elements 3 7 rndFn))
+      ;(numCards(cardsSet elements 3 4 rndFn))
+
+;nthCard
+;DOM: int X cardsSet(list)
+;REC: Card(list)
 ;Recursión: Natural
-;Resumen: Función que verifica que un mazo "cardsSet" sea válido
+;Resumen: busca la carta "n" dentro del cardsSet
+(define (nthCard n cardsSet)
+  (getCard n cardsSet)
+)
+;Ejemplos de uso:
+      ;(nthCard 0 (cardsSet elements 2 3 rndFn))
+      ;(nthCard 1 (cardsSet elements 2 3 rndFn))
+      ;(nthCard 10 (cardsSet elements 2 3 rndFn))
+
+;findTotalCards
+;DOM: Card(list)
+;REC: int
+;Recursión:
+;Resumen: A partir de una carta de muestra, determina la cantidad total de cartas que se deben producir para construir un conjunto válido.
+(define (findTotalCards card)
+  (+ (* (calcularOrden (length card)) (calcularOrden (length card))) (calcularOrden (length card)) 1)
+)
+
+;Ejemplos de uso:
+      ;(findTotalCards (nthCard 1 (cardsSet (list "0" "A" "B" "C") 2 -1 randomFn)))
+      ;(findTotalCards '("1" "3" "2"))
+      ;(findTotalCards (nthCard 5 (cardsSet elements 4 -1 randomFn)))
+
+;
+;DOM: 
+;REC: 
+;Recursión:
+;Resumen:
+
+
+;Ejemplos de uso:
+      ;
+      ;
+      ;
+
+;
+;DOM: 
+;REC: 
+;Recursión:
+;Resumen:
+
+
+;Ejemplos de uso:
+      ;
+      ;
+      ;
+
+;
+;DOM: 
+;REC: 
+;Recursión:
+;Resumen:
+
+
+;Ejemplos de uso:
+      ;
+      ;
+      ;
+
+;
+;DOM: 
+;REC: 
+;Recursión:
+;Resumen:
+
+
+;Ejemplos de uso:
+      ;
+      ;
+      ;
+
+;
+;DOM: 
+;REC: 
+;Recursión:
+;Resumen:
+
+
+;Ejemplos de uso:
+      ;
+      ;
+      ;
+
+;
+;DOM: 
+;REC: 
+;Recursión:
+;Resumen:
 
 
 ;Ejemplos de uso:
