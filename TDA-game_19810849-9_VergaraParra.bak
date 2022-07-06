@@ -8,44 +8,311 @@
 (provide (all-defined-out))
 
 #|REPRESENTACIÓN:
-numPlayers(int) X cardsSet X mode (fn) X rndFn (fn)
+
+numPlayers(int) X cardsSet(list) X Players(list) X jugando(int)
 
 numPlayers: Entero que señala la cantidad de jugadores.
 cardsSet: Conjunto válido de cartas
-mode: Función que permite internamente determinar el modo de juego, la forma en que se ejecutan los turnos, repartición de cartas, etc.
-rndFn: Función de aleatorización que debe garantizar transparencia referencial.|#
+players: lista con los nombres de los jugadores y sus respectivos puntajes
+jugando: si el juego está en marcha será 1, sino 0.|#
 
 
 ;CONSTRUCTOR:
-;DOM: integer X list X function X function
-;REC: game
+;DOM: int X list X function X function
+;REC: game (list)
 ;Recursión: No hay
 ;Resumen: Debe construir la función "game", la cual corresponde a la estructura que alberga el área de juego, las piezas disponibles, jugadores registrados, sus cartas y el estado del juego, entre otros elementos
-
-#|(define game 4 (cardsSet (list “A” “B” “C”)) stackMode randomFn))
+(define (game numPlayers cardsSet stackMode randomFn)
+  (if (game? list(numPlayers cardsSet stackMode randomFn))
+             ;true
+             (list numPlayers cardsSet '() 1)
+             ;false
+             (display "No ingresó los elementos adecuados al constructor")
+      )
 )
-|#
 
 ;PERTENENCIA:
-;DOM: Lista con elementos
+;DOM: elementos
 ;REC: Boolean
 ;Recursión: Ninguna
 ;Resumen: Verifica que los elementos de lo que sea que hayan pasado como Dominio cumplan con el del TDA.
 (define (game? elementos)
   (if (and
-      (list? elementos)
       (integer?   (car elementos))
-      (list?      (car(cdr elementos)))
-      (procedure? (car(cdr(cdr elementos))))
-      (procedure? (car(cdr(cdr(cdr elementos)))))
+      (list?      (cadr elementos))
+      (list?      (caddr elementos))
+      (integer?   (cadddr elementos))
       )
       #true
       #false
   )
 )
-
 ;SELECTORES: permiten obtener un dato específico del dato compuesto
+
+;Dom: game(list)
+;Rec: int
+;Recursión: no hay
+;Resumen: Entrega el número de jugadores en game
+(define (getNumPlayers game)
+  (if (game? game)
+      ;true
+      (car game)
+      ;false
+      -1
+      )
+)
+
+;Dom: game(list)
+;Rec: list de lists
+;Recursión: no hay
+;Resumen: Entrega el mazo de cartas en game
+(define (getCardsSet game)
+  (if (game? game)
+      ;true
+      (cadr game)
+      ;false
+      '()
+      )
+)
+
+;Dom: game(list)
+;Rec: list de lists
+;Recursión: no hay
+;Resumen: Entrega el nombre de los jugadores y su puntaje en game
+(define (getPlayers game)
+  (if (game? game)
+      ;true
+      (caddr game)
+      ;false
+      '()
+      )
+)
+
+;Dom: game(list)
+;Rec: int
+;Recursión: no hay
+;Resumen: Entrega un 0 si el juego terminó o un 1 si sigue en pie.
+(define (getPartida game)
+  (if (game? game)
+      ;true
+      (cadddr game)
+      ;false
+      -1
+      )
+)
 
 ;MODIFICADORES: alteran los datos de un elemento específico
 
+
 ;OTRAS FUNCIONES:
+
+;stackMode
+;DOM: cardsSet
+;REC: cardsSet
+;Recursión: No hay
+;Resumen: Función que permite "retirar y voltear" las dos cartas superiores del stack de cartas en el juego y las dispone en el área de juego.
+(define (stackMode cardsSet)
+  (if (list? cardsSet);Si nos entregan otra cosa distinta a una lista, dará el error
+        ;true
+        (cdr(cdr cardsSet))
+        ;false
+        (error "cardsSet no es una lista de cartas")))
+
+;register
+;DOM: str X game (lista con el estado del juego actual)
+;REC: game (list de lists)
+;Recursión: No hay
+;Resumen: Registra un jugador en game, si no se ha excedido la cantidad máxima de jugadores.
+(define (register user game)
+  (if (not(<= (length game) 2));si el largo de game es menor o igual a 2:
+      ;true
+      (if (not(>=(length(list-ref game 2))(list-ref game 0)));si la cantidad de jugadores registrados es menor que la de jugadores
+          ;true
+          (list (getNumPlayers game)(getCardsSet game)(append (list-ref game 2) (list(list user "0"))))
+          ;false
+          (error "Se ha registrado el máximo de jugadores")
+      )
+      ;false
+      (append game (list(list user)))
+      )
+)
+
+;whoseTurnIsIt?
+;DOM: game (list de list)
+;REC: str
+;Recursión: No hay
+;Resumen: Retorna el nombre (previamente registrado) del jugador al que le toca jugar.
+(define (whoseTurnIsIt? game)
+  (car(getPlayers game)))
+
+;spotIt
+;DOM:
+;REC:
+;Recursión:
+;Resumen: Función que corresponde a la acción spotIt de la función play
+(define (spotIt )(null))
+
+;pass
+;DOM:
+;REC:
+;Recursión:
+;Resumen:
+(define (pass )
+  (null))
+
+;mayorPuntaje
+
+;ganador?
+(define (ganador? game)
+  (if (equal? (length(getPlayers game)) 2)
+      ;true
+      null ;(not(equal? ()())getPlayers game)
+      ;false
+      null
+      )
+)
+
+;listaPuntajes
+;DOM: list (lista con jugadores)
+;REC: list (lista con puntajes)
+;Recursión: natural
+;Resumen: Recibe una lista con jugadores y "retorna" una lista con puntajes
+(define (listaPuntajes lista)
+  (if (null? lista)
+      ;true
+      null
+      ;false
+      (cons (string->number(car(cdr (car lista)))) (listaPuntajes (cdr lista))) 
+      )
+)
+;
+(define puntajes
+  (listaPuntajes '(("Pedro" "3")("Juan" "3")("Diego" "2"))))
+
+;ganadores?
+(define (ganadores? lista)
+  (getWinners lista (MaxValue lista))
+)
+
+;getWinners
+(define (getWinners lista ganador)
+  (if (null? lista)
+      ;true
+      null
+      ;false
+      (if (equal? (string->number(cadar lista)) (string->number(cadr ganador)))
+          ;true
+          (cons (car lista) (getWinners (cdr lista) ganador))
+          ;false
+          (getWinners (cdr lista) ganador)
+      ))
+)
+
+(define (MaxValue lista)
+    (mayor lista '("" "0")))
+;
+(define (mayor lista max)
+    (if (null? lista)
+      max
+      (if (< (string->number(cadr max)) (string->number(cadar lista)))
+        (mayor (cdr lista) (car lista))
+        (mayor (cdr lista) max))))
+
+;empate?
+(define (empate? lista)
+  null
+)
+
+;finish
+;DOM:
+;REC:
+;Recursión:
+;Resumen:
+(define (finish game)
+   (list (getNumPlayers game) (getCardsSet game)(getPlayers game)(getPartida game)
+        (if(not(equal? (getPlayers game)'()))
+           ;true
+           (null)
+           ;false
+           (printf "El ganador es: ~a con ~a puntos.")))
+)
+
+
+;play
+;DOM: game (list de lists) X action (fn)
+;REC: game (list de lists)
+;Recursión: 
+;Resumen:
+(define (play game action)
+  (cond
+    [(equal? action spotIt)  (spotIt game)] ;función currificada para realizar la comparación entre las cartas volteadas a partir del elemento indicado por el usuario. Luego de esta función se contempla cambio de turno
+    [(equal? action pass)      (pass game)] ;función que permite pasar el turno, procurando volver las cartas a su sitio de acuerdo a la modalidad de juego.
+    [(equal? action finish)  (finish game)] ;Terminado e indicando ganador/perdedor/empate. Luego de finish no se puede continuar la partida.
+    [(equal? action null)(list (getNumPlayers game) (getCardsSet game)(getPlayers game)(getPartida game))] ;solo se hace el volteo inicial de cartas según la modalidad de juego activa y no se pasa el turno.
+    [else "Ingrese una acción válida"])
+)
+
+;strList
+;DOM: lista (con strings)
+;REC: string
+;Recursión: Natural
+;Resumen: Transforma una lista de strings a un string gigante
+(define (strList lista)
+  (if(not(equal? 0 (length lista)));si el largo de la lista es distinto de 0
+     ;true
+     (string-append " " (string-append (car lista) (strList (cdr lista))))
+     ;false
+     " "
+   )
+)
+
+;strMatriz
+;DOM: list de lists
+;REC: string
+;Recursión: Natural
+;Resumen:
+(define (strMatriz lista)
+  (if(not(equal? 0 (length lista)));si el largo de la lista es distinto de 0
+     ;true
+     (string-append " " (string-append (string-append(string-append "(" (strList(car lista)))")") (strMatriz (cdr lista))))
+     ;false
+     ""
+   )
+)
+
+;status
+;DOM: game
+;REC: string
+;Recursión: No hay
+;Resumen: Esta función entrega un string con el estado actual del juego, a este string se le puede hacer display.
+(define (status game)
+  (string-append "El estado actual del juego es: \n"
+                 (string-append "Mazo de cartas:"
+                 (string-append (strMatriz (getCardsSet game))
+                 (string-append ",\n"
+                 (string-append "Número de jugadores: "
+                 (string-append (number->string (getNumPlayers game))
+                 (string-append ",\n"
+                 (string-append "Jugadores en la partida:"
+                 (string-append (strMatriz (getPlayers game))
+                 (string-append ",\n"
+                 (string-append (if (=(getPartida game) 0) "La partida ha terminado" "La partida sigue en pie"))))))))))))
+)
+
+;
+;DOM:
+;REC:
+;Recursión:
+;Resumen:
+
+;
+;DOM:
+;REC:
+;Recursión:
+;Resumen:
+
+;
+;DOM:
+;REC:
+;Recursión:
+;Resumen:

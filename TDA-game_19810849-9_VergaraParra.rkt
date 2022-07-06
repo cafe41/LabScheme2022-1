@@ -23,8 +23,12 @@ jugando: si el juego está en marcha será 1, sino 0.|#
 ;Recursión: No hay
 ;Resumen: Debe construir la función "game", la cual corresponde a la estructura que alberga el área de juego, las piezas disponibles, jugadores registrados, sus cartas y el estado del juego, entre otros elementos
 (define (game numPlayers cardsSet stackMode randomFn)
-        (list numPlayers cardsSet '() 1)
+             (list numPlayers cardsSet '() 1)
 )
+;Ejemplos de uso:
+      ;(game 2 (cardsSet elements 2 3 rndFn) stackMode randomFn)
+      ;(game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn)
+      ;(game 5 (cardsSet elements 4 10 rndFn) stackMode randomFn)
 
 ;PERTENENCIA:
 ;DOM: elementos
@@ -42,8 +46,14 @@ jugando: si el juego está en marcha será 1, sino 0.|#
       #false
   )
 )
+;Ejemplos de uso:
+      ;(game? (game 2 (cardsSet elements 2 3 rndFn) stackMode randomFn))
+      ;(game? (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))
+      ;(game? '(0 () 1 2))
+
 ;SELECTORES: permiten obtener un dato específico del dato compuesto
 
+;getNumPlayers
 ;Dom: game(list)
 ;Rec: int
 ;Recursión: no hay
@@ -56,7 +66,12 @@ jugando: si el juego está en marcha será 1, sino 0.|#
       -1
       )
 )
+;Ejemplos de uso:
+      ;(getNumPlayers (game 2 (cardsSet elements 2 3 rndFn) stackMode randomFn))
+      ;(getNumPlayers (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))
+      ;(getNumPlayers (game 5 (cardsSet elements 4 10 rndFn) stackMode randomFn))
 
+;getCardsSet
 ;Dom: game(list)
 ;Rec: list de lists
 ;Recursión: no hay
@@ -69,7 +84,12 @@ jugando: si el juego está en marcha será 1, sino 0.|#
       '()
       )
 )
+;Ejemplos de uso:
+      ;(getCardsSet (game 2 (cardsSet elements 2 3 rndFn) stackMode randomFn))
+      ;(getCardsSet (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))
+      ;(getCardsSet (game 5 (cardsSet elements 4 10 rndFn) stackMode randomFn))
 
+;getPlayers
 ;Dom: game(list)
 ;Rec: list de lists
 ;Recursión: no hay
@@ -82,7 +102,12 @@ jugando: si el juego está en marcha será 1, sino 0.|#
       '()
       )
 )
+;Ejemplos de uso:
+      ;(getPlayers (game 2 (cardsSet elements 2 3 rndFn) stackMode randomFn))
+      ;(getPlayers (setPlayers '((Pedro "0")(Juan "0")(Diego "0"))(game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn)))
+      ;(getPlayers (register "Perro" (register "Gato" (game 5 (cardsSet elements 4 10 rndFn) stackMode randomFn))))
 
+;getPartida
 ;Dom: game(list)
 ;Rec: int
 ;Recursión: no hay
@@ -95,9 +120,73 @@ jugando: si el juego está en marcha será 1, sino 0.|#
       -1
       )
 )
+;Ejemplos de uso:
+      ;(getPartida (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))
+      ;(getPartida (setPartida 0 (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn)))
+      ;(getPartida (game 2 (cardsSet elements 2 3 rndFn) stackMode randomFn))
 
 ;MODIFICADORES: alteran los datos de un elemento específico
 
+;setNumPlayers
+;DOM: int X game(list)
+;REC: game(list)
+;Recursión: No aplica
+;Resumen: Sobrescribirá la cantidad de jugadores.
+(define (setNumPlayers maxPlayers game)
+  (if (integer? maxPlayers)
+      ;true
+      (if (>= maxPlayers (length (getPlayers game)))
+          ;true
+          (list maxPlayers (getCardsSet game) (getPlayers game) (getPartida game))
+          ;false
+          (display "El número ingresado es menor que la cantidad de jugadores actuales.")
+          )
+      ;false
+      (display "No ingresó un número válido")
+      )
+)
+;Ejemplos de uso:
+      ;(setNumPlayers 3 (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))
+      ;(setNumPlayers 1 (setPlayers '((Jugador1 "1")) (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn)))
+      ;(setNumPlayers 5 (setPlayers '((Jugador1 "1")(Miguel "2")(SugarDaddy "100")) (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn)))
+
+;setCardsSet
+
+;setPlayers (riesgoso de usar)
+;DOM: (lista con listas) X game(list)
+;REC: game(list)
+;Recursión: No aplica.
+;Resumen: Sobrescribirá los jugadores actuales.
+(define (setPlayers players game)
+  (if (and (list? players)(list? (car players)))
+      ;true
+      (list (getNumPlayers game) (getCardsSet game) players (getPartida game))
+      ;false
+      (display "No ingresó jugadores de forma correcta.")
+      )
+)
+;Ejemplos de uso:
+      ;(setPlayers '((Pedro "1")(Juan "2")(Perro "100")) (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))
+      ;(setPlayers '((Pedro "1")(Juan "2")) (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))
+      ;(setPlayers '((Jugador1 "1")) (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))
+
+;setPartida
+;Dom: int X game(list) 
+;Rec: game(list)
+;Recursión: no hay
+;Resumen: La partida es 0 si terminó, sino será 1
+(define (setPartida p game)
+  (if (equal? p 1)
+      ;true
+      (list (getNumPlayers game) (getCardsSet game) (getPlayers game) 1)
+      ;false
+      (list (getNumPlayers game) (getCardsSet game) (getPlayers game) 0)
+      )
+)
+;Ejemplos de uso:
+      ;(setPartida 1 (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))
+      ;(setPartida 0 (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))
+      ;(setPartida "HOLA" (game 2 (cardsSet elements 2 3 rndFn) stackMode randomFn))
 
 ;OTRAS FUNCIONES:
 
@@ -107,11 +196,19 @@ jugando: si el juego está en marcha será 1, sino 0.|#
 ;Recursión: No hay
 ;Resumen: Función que permite "retirar y voltear" las dos cartas superiores del stack de cartas en el juego y las dispone en el área de juego.
 (define (stackMode cardsSet)
-  (if (list? cardsSet);Si nos entregan otra cosa distinta a una lista, dará el error
-        ;true
-        (cdr(cdr cardsSet))
-        ;false
-        (error "cardsSet no es una lista de cartas")))
+  (if (cardsSet? cardsSet);Si nos entregan otra cosa distinta a un cardsSet, dará el error
+      ;true
+      (if (not(< (length cardsSet) 2))
+          ;true
+          (list (car cardsSet)(car(cdr cardsSet))(cdr (cdr cardsSet)))
+          ;false
+          (display "No quedan cartas suficientes en el mazo para seguir"))
+      ;false
+      (display "cardsSet no es una lista de cartas")))
+;Ejemplos de uso:
+      ;(stackMode (cardsSet elements 3 7 rndFn))
+      ;(stackMode (cardsSet elements 2 3 rndFn))
+      ;(stackMode (cardsSet elements 3 1 rndFn))
 
 ;register
 ;DOM: str X game (lista con el estado del juego actual)
@@ -123,14 +220,18 @@ jugando: si el juego está en marcha será 1, sino 0.|#
       ;true
       (if (not(>=(length(list-ref game 2))(list-ref game 0)));si la cantidad de jugadores registrados es menor que la de jugadores
           ;true
-          (list (getNumPlayers game)(getCardsSet game)(append (list-ref game 2) (list(list user "0"))))
+          (list (getNumPlayers game)(getCardsSet game)(append (list-ref game 2) (list(list user "0")))(getPartida game))
           ;false
-          (error "Se ha registrado el máximo de jugadores")
+          (display "Se ha registrado el máximo de jugadores, no puede agregar más.")
       )
       ;false
       (append game (list(list user)))
       )
 )
+;Ejemplos de uso:
+      ;(register "Diego" (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))
+      ;(register "Juan" (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))
+      ;(register "Perro" (register "Gato" (game 1 (cardsSet elements 2 3 rndFn) stackMode randomFn)))
 
 ;whoseTurnIsIt?
 ;DOM: game (list de list)
@@ -138,14 +239,27 @@ jugando: si el juego está en marcha será 1, sino 0.|#
 ;Recursión: No hay
 ;Resumen: Retorna el nombre (previamente registrado) del jugador al que le toca jugar.
 (define (whoseTurnIsIt? game)
-  (car(getPlayers game)))
+  (if (> (length(getPlayers game)) 0)
+      ;true
+  (car(getPlayers game))
+  ;false
+  (display "No hay jugadores"))
+  )
+;Ejemplos de uso:
+      ;(whoseTurnIsIt? (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))
+      ;(whoseTurnIsIt? (register "Juan" (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn)))
+      ;(whoseTurnIsIt? (register "Perro" (register "Gato" (game 2 (cardsSet elements 2 3 rndFn) stackMode randomFn))))
 
 ;spotIt
 ;DOM:
 ;REC:
 ;Recursión:
 ;Resumen: Función que corresponde a la acción spotIt de la función play
-(define (spotIt )(null))
+(define (spotIt )(display "wip"))
+;Ejemplos de uso:
+      ;
+      ;
+      ;
 
 ;pass
 ;DOM:
@@ -153,7 +267,11 @@ jugando: si el juego está en marcha será 1, sino 0.|#
 ;Recursión:
 ;Resumen:
 (define (pass )
-  (null))
+  (display "wip"))
+;Ejemplos de uso:
+      ;
+      ;
+      ;
 
 ;mayorPuntaje
 
@@ -166,21 +284,31 @@ jugando: si el juego está en marcha será 1, sino 0.|#
       null
       )
 )
+;Ejemplos de uso:
+      ;
+      ;
+      ;
 
 ;listaPuntajes
 ;DOM: list (lista con jugadores)
 ;REC: list (lista con puntajes)
 ;Recursión: natural
 ;Resumen: Recibe una lista con jugadores y "retorna" una lista con puntajes
-(define (listaPuntajes lista)
-  (if (null? lista)
+(define (listaPuntajes jugadores)
+  (if (null? jugadores)
       ;true
       null
       ;false
-      (cons (string->number(car(cdr (car lista)))) (listaPuntajes (cdr lista))) 
+      (cons (string->number(car(cdr (car jugadores)))) (listaPuntajes (cdr jugadores))) 
       )
 )
-;
+;Ejemplos de uso:
+      ;(listaPuntajes '(("Pedro" "3")("Juan" "3")("Diego" "2")))
+      ;(listaPuntajes (getPlayers (game 2 (cardsSet elements 2 3 rndFn) stackMode randomFn)))
+      ;(listaPuntajes (getPlayers (register "Diego" (setPlayers '((Pedro "1")(Juan "2")) (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn)))))
+
+
+;-WIP finish-
 (define puntajes
   (listaPuntajes '(("Pedro" "3")("Juan" "3")("Diego" "2"))))
 
@@ -202,7 +330,7 @@ jugando: si el juego está en marcha será 1, sino 0.|#
           (getWinners (cdr lista) ganador)
       ))
 )
-
+;
 (define (MaxValue lista)
     (mayor lista '("" "0")))
 ;
@@ -219,18 +347,23 @@ jugando: si el juego está en marcha será 1, sino 0.|#
 )
 
 ;finish
-;DOM:
+;DOM: game
 ;REC:
 ;Recursión:
 ;Resumen:
 (define (finish game)
-   (list (getNumPlayers game) (getCardsSet game)(getPlayers game)(getPartida game)
-        (if(not(equal? (getPlayers game)'()))
+   (list (getNumPlayers game)(getCardsSet game)(getPlayers game)(getPartida game)
+        (if (> (length (getPlayers game)) 0)
            ;true
            (null)
            ;false
            (printf "El ganador es: ~a con ~a puntos.")))
 )
+;Ejemplos de uso:
+      ;
+      ;
+      ;(finish (setPlayers '((Pedro "1")(Juan "2")) (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn)))
+;-WIP-
 
 
 ;play
@@ -246,6 +379,10 @@ jugando: si el juego está en marcha será 1, sino 0.|#
     [(equal? action null)(list (getNumPlayers game) (getCardsSet game)(getPlayers game)(getPartida game))] ;solo se hace el volteo inicial de cartas según la modalidad de juego activa y no se pasa el turno.
     [else "Ingrese una acción válida"])
 )
+;Ejemplos de uso:
+;(play (getPlayers (game 2 (cardsSet elements 2 3 rndFn) pass)
+;(play (getPlayers (game 2 (cardsSet elements 2 3 rndFn) finish)
+;(play (getPlayers (game 2 (cardsSet elements 2 3 rndFn) null)
 
 ;strList
 ;DOM: lista (con strings)
@@ -293,6 +430,10 @@ jugando: si el juego está en marcha será 1, sino 0.|#
                  (string-append ",\n"
                  (string-append (if (=(getPartida game) 0) "La partida ha terminado" "La partida sigue en pie"))))))))))))
 )
+;Ejemplos de uso:
+      ;(status (game 2 (cardsSet elements 2 3 rndFn) stackMode randomFn))
+      ;(status (register "Juan" (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn)))
+      ;(display (status (setPlayers '(("Pedro" "1")("Juan" "2")) (game 4 (cardsSet elements 3 7 rndFn) stackMode randomFn))))
 
 ;
 ;DOM:

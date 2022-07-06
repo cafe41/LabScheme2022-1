@@ -58,19 +58,82 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
                               (cardsSet Elements numE (- maxC 1) rndFn))
                         )
                     ;false
-                    (display "pidió más cartas de las que puede generar\n")
+                    (display "Pidió más cartas de las que puede generar con esa cantidad de elementos.\n")
                     )
 )
+;Ejemplos de uso:
+      ;(cardsSet '("0" "1" "2" "3") 2 3 rndFn)
+      ;(cardsSet elements 3 7 rndFn)
+      ;(cardsSet elements 3 10 rndFn)
 
 ;PERTENENCIA: verifica los datos
 ;DOM: Lo que sea
 ;REC: Boolean
 ;Recursión: Ninguna
-;Resumen: Verifica que los elementos de lo que sea que hayan pasado como Dominio cumplan con el del TDA.
+;Resumen: Verifica que los elementos de lo que sea que hayan pasado como Dominio cumplan con los del TDA.
+(define (cardsSet? elementos)
+  (if (and
+      (list?   (car elementos))
+      (string? (car (car elementos)))
+      )
+      #true
+      #false
+  )
+)
+;Ejemplos de uso:
+      ;(cardsSet? (cardsSet elements 2 3 rndFn))
+      ;(cardsSet? (cardsSet elements 3 7 rndFn))
+      ;(cardsSet? '(0 () 1 2))
 
 ;SELECTORES: permiten obtener un dato específico del dato compuesto
 
+;getCard
+;DOM: int X cardsSet
+;REC: Card (list)
+;Recursión: Natural
+;Resumen: Consigue una carta "n" del cardSet, si es posible.
+(define (getCard n cardsSet)
+  (if (not(> n (length cardsSet)))
+      ;true
+      (if (equal? n 0)
+          ;true (caso base)
+          (car cardsSet)
+          ;false
+          (getCard (- n 1) (cdr cardsSet))
+          )
+      ;false
+      (display "El número (n) que ingresó es mayor que la cantidad de cartas")
+      )
+)
+;Ejemplos de uso:
+      ;(getCard 0 (cardsSet elements 2 3 rndFn))
+      ;(getCard 1 (cardsSet elements 2 3 rndFn))
+      ;(getCard 10 (cardsSet elements 2 3 rndFn))
+
 ;MODIFICADORES: alteran los datos de un elemento específico
+
+;setCard
+;DOM: cardsSet X int X Card(list) X list
+;REC: cardsSet
+;Recursión: De cola
+;Resumen: Cambia la carta "n" por otra que se le entregue.
+(define (setCard cardsSet n card nCartas)
+  (if (not(> n (length cardsSet)))
+      ;true
+      (if (equal? n 0)
+          ;true (caso base)
+          (append nCartas (list card) (cdr cardsSet))
+          ;false (llamado recursivo)
+          (setCard (cdr cardsSet) (- n 1) card (append nCartas (list (car cardsSet))))
+          )
+  ;false
+  (display "El número (n) que ingresó es mayor que la cantidad de cartas")
+  )
+)
+;Ejemplos de uso:
+      ;(setCard (cardsSet elements 2 3 rndFn) 10 '("X" "D") '())
+      ;(setCard (cardsSet elements 2 3 rndFn) 1 '("X" "D") '())
+      ;(setCard (cardsSet elements 2 3 rndFn) 0 '("Hello" "World") '())
 
 ;OTRAS FUNCIONES:
 
@@ -101,7 +164,8 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
       ;false
       null
   )
-)
+);Ejemplos de uso:
+      ;(crearPrimeraCarta elements 1 (calcularOrden 5))
 
 ;cicloCartasN
 ;DOM: list X str X int X int X int
@@ -116,7 +180,8 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
       ;false (caso base)
       (cons  (crearCartaN Elements elementoPC n j k) null) ;card.push(1)
       )
-)
+);Ejemplos de uso:
+      ;(cicloCartasN elements (list-ref elements 1) 4 1 1)
 
 ;crearCartaN
 ;DOM: list X int X int X int X int
@@ -137,6 +202,8 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
     (cons elementoPC null)
     )
 )
+;Ejemplos de uso:
+      ;(crearCartaN elements (list-ref elements 1) 4 1 1)
 
 ;cicloCartasN2
 ;DOM: list X int X int X int X int
@@ -158,9 +225,11 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
       null
       )
 )
+;Ejemplos de uso:
+      ;(cicloCartasN2 elements 4 1 1 1)
 
 ;crearCartaN2
-;DOM: list X int X int X int X int X procedure
+;DOM: list X int X int X int X int
 ;REC: cartaN2 (list)
 ;Recursión: Natural
 ;Resumen: Esta función crea cartas "n^2", a través de un par de ciclos recursivos
@@ -178,6 +247,8 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
       (cons (list-ref Elements (+ i 1)) null)
    )
 )
+;Ejemplos de uso:
+      ;(crearCartaN2 elements 4 1 1 1)
 
 ;cadrRecursivo
 ;DOM: int X list
@@ -192,3 +263,29 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
           (cadrRecursivo (- num 1) (cdr list))
       )
 )
+;Ejemplos de uso:
+      ;(cadrRecursivo 3 '(1 2 3 4 5 6))
+
+;dobble?
+;DOM: cardsSet
+;REC: boolean
+;Recursión: Natural
+;Resumen: Función que verifica que un mazo "cardsSet" sea válido
+
+
+;Ejemplos de uso:
+      ;
+      ;
+      ;
+
+;dobble?
+;DOM: cardsSet
+;REC: boolean
+;Recursión: Natural
+;Resumen: Función que verifica que un mazo "cardsSet" sea válido
+
+
+;Ejemplos de uso:
+      ;
+      ;
+      ;
