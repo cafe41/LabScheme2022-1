@@ -6,13 +6,13 @@
 (require math/number-theory)
 (provide (all-defined-out))
 
-;Bibloteca de elementos (con la que realizaré pruebas)
-(define elements(list "!" "E1" "#" "E2" "$"  "E3" "%" "E4" "/" "E5" "E6" "E7" "E8" "E9" "E10" ")"
+;Bibloteca de elementos (con la que realizaré pruebas y ejemplos)
+(define elements(list "Ღ" "♪" "♦" "♠" "☻" "☺" "♥" "♣" "●" "♂" "♀" "►" "◄" "▲" "▼" "♬" "..." "μ"
+                      "!" "E1" "#" "E2" "$"  "E3" "%" "E4" "/" "E5" "E6" "E7" "E8" "E9" "E10" ")"
                       "E11" "(" "E12" "E13" "E14" "E15" "E16" "E17" "E18" "E19" "E20" "E21" "E22"
                       "E23" "E24" "E25" "E26" "E28" "E29" "E30" "/&" "#$" "!¡!¡" "?¿" "¿?" "¿" "¡"
-                      "=" ")(" "≖‿≖" "ツ" "(◉‿◉)" "(❂‿❂)" "°Д°" "◕‿◕" "♪" "(°͜ʖ°)" "ಠ۾ಠ" "♬"
-                      "(っ•́-•́)っ" "ʕ-ᴥ-ʔ" "・ω・" "(╯°o°)╯" "ಠ∩ಠ" "Ღ" "♦" "♠" "☻" "☺" "♥" "♣" "●"
-                      "♂" "♀" "►" "◄" "▲" "▼" "¬u¬" "..." "μ" "holi" "como" "estas"));80 elementos
+                      "=" ")(" "≖‿≖" "ツ" "(◉‿◉)" "(❂‿❂)" "°Д°" "◕‿◕"  "(°͜ʖ°)" "ಠ۾ಠ" "(っ•́-•́)っ"
+                      "ʕ-ᴥ-ʔ" "・ω・" "(╯°o°)╯" "ಠ∩ಠ" "¬u¬"  "holi" "como" "estas")) ;80 elementos
 
 #|REPRESENTACIÓN:
 Elements (list) X numE(int) X maxC(int) X rndFn (fn)
@@ -270,17 +270,102 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
 ;Ejemplos de uso:
       ;(cadrRecursivo 3 '(1 2 3 4 5 6))
 
+;contains?
+;DOM: element X list
+;REC: boolean
+;Recursión: Natural
+;Resumen: Verifica si un elemento está contenido en una lista.
+(define (contains? element list)
+  (if (not (equal? (length list) 0))
+      ;true
+      (if (equal? element (car list))
+          ;true
+          #true
+          ;false
+          (contains? element (cdr list))
+          )
+      ;false
+      #false
+      )
+)
+;Ejemplos de uso:
+      ;(contains? "11" (car (cardsSet '("0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13") 4 -1 randomFn))) ;caso true
+      ;(contains? "1" (car (cardsSet '("0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13") 4 -1 randomFn)))  ;caso false
+      
+;elementosCardsSet
+;DOM: cardsSet(list de list) X int (length carta) X list
+;REC: list (lista con elementos del cardsSet)
+;Recursión: Natural
+;Resumen: Función que a partir de un cardsSet, retorna una lista con elementos.
+(define (elementosCardsSet cardsSet listaAux)
+  (if (not (equal? (length cardsSet) 0));Si el largo de cardsSet es distinto de 0 chequeado
+      ;true: Continúa
+      (if (equal? (length (car cardsSet)) 0);si el elemento "0" del cardsSet es una lista vacía: chequeado
+          ;true: Llamado recursivo cortando esa "carta" del cardsSet chequeado
+          (elementosCardsSet (cdr cardsSet) listaAux)
+          ;false: Continúa el ciclo
+          (if (not(contains? (car(car cardsSet)) listaAux));Si listaAux NO contiene el elemento cardsSet[0][0]:
+              ;true: append el elemento a listaAux y se corta del cardsSet chequeado
+              (elementosCardsSet (setCard cardsSet 0 (cdr(car cardsSet)) '() ) (append listaAux (list(car(car cardsSet)))))
+              ;false: se corta el elemento de la lista.
+              (elementosCardsSet (setCard cardsSet 0 (cdr(car cardsSet)) '() ) listaAux)
+           )
+       )
+      ;false: retorna listaAux
+      (append '() listaAux)
+   )
+)
+;Ejemplos de uso:
+      ;(elementosCardsSet (cardsSet '("0" "1" "2" "3" "4") 2 -1 randomFn) '("0"))
+      ;(elementosCardsSet (cardsSet '("0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13") 4 -1 randomFn) '("0"))
+
+;sobranElementos?
+;DOM: cardsSet
+;REC: boolean
+;Recursión: Natural
+;Resumen: Función que verifica si sobran elementos al cardsSet o no, si es así retornará #true, sino #false.
+(define (sobranElementos? cardsSet)
+  (if (not(< (length cardsSet) 2)) ;si hay más de 2 cartas:
+      ;true: Continúa
+      (if (not(equal? (car cardsSet) '()));Si la primera carta del mazo NO está vacía:
+          ;true: Continúa
+          (if (contains? (car(car cardsSet)) (car(cdr cardsSet)));Si el primer elemento de la carta está contenido en la segunda:
+              ;true: llamado recursivo, ambas cartas se van
+              (sobranElementos? (cdr(cdr cardsSet)))
+              ;false: se reintenta con otro elemento de la carta
+              (sobranElementos? (setCard cardsSet 0 (cdr (car cardsSet)) '()))
+              )
+          ;false: Sobran elementos, return true
+          #true
+          )
+      ;false: Entonces no sobran elementos, return false
+      #false
+      )
+)
+;Ejemplos de uso:
+      ;(sobranElementos? '(("1" "2")("2" "3")("3" "1")("4" "5")))                  ;caso true
+      ;(sobranElementos? (setCard (cardsSet elements 2 3 rndFn) 1 '("X" "D") '())) ;caso true 2
+      ;(sobranElementos? (cardsSet '("0" "1" "2" "3" "4") 2 -1 randomFn))          ;caso false
+
 ;dobble?
 ;DOM: cardsSet
 ;REC: boolean
 ;Recursión: Natural
 ;Resumen: Función que verifica que un mazo "cardsSet" sea válido
-
-
+(define (dobble? cardsSet)
+  (if (cardsSet? cardsSet);primero vemos que sea una lista con listas y esas listas tengan strings.
+      ;true: Seguimos
+      (if (not(sobranElementos? cardsSet));si NO sobran elementos en el cardsSet:
+          #true  ;entonces
+          #false ;sino
+          )
+      #false ;false: return false
+      )
+)
 ;Ejemplos de uso:
-      ;
-      ;
-      ;
+      ;(dobble? (cardsSet elements 3 -1 randomFn))       ;#t
+      ;(dobble? '(("1" "2")("2" "3")("3" "1")("4" "5"))) ;#f
+      ;(dobble? (cardsSet elements 3 3 randomFn))        ;#t
 
 ;numCards
 ;DOM: 
@@ -321,74 +406,117 @@ rndFn: Función de aleatorización que debe garantizar transparencia referencial
       ;(findTotalCards '("1" "3" "2"))
       ;(findTotalCards (nthCard 5 (cardsSet elements 4 -1 randomFn)))
 
-;
-;DOM: 
-;REC: 
-;Recursión:
-;Resumen:
-
-
-;Ejemplos de uso:
-      ;
-      ;
-      ;
-
-;
-;DOM: 
-;REC: 
-;Recursión:
-;Resumen:
-
+;requiredElements
+;DOM: Card (list)
+;REC: int
+;Recursión: No
+;Resumen: A partir de una carta de muestra, determina la cantidad total de elementos necesarios para poder construir un conjunto válido.
+(define (requiredElements card)
+  (+ (* (calcularOrden (length card)) (calcularOrden (length card))) (calcularOrden (length card)) 2)
+);Para este constructor en particular, se requiere una cantidad de elementos + 1, pues lee la lista desde el "1" y no el "0".
 
 ;Ejemplos de uso:
-      ;
-      ;
-      ;
+      ;(requiredElements (nthCard 1 (cardsSet (list "0" "A" "B" "C") 2 -1 randomFn)))
+      ;(requiredElements '("0" "A" "D" "G" "T"))
+      ;(requiredElements (car(cardsSet '("0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13") 4 -1 randomFn)))
 
-;
-;DOM: 
-;REC: 
-;Recursión:
-;Resumen:
+;cartasIguales?
+;DOM: Card(list) X Card
+;REC: boolean
+;Recursión: Natural
+;Resumen: Compara dos cartas, independiente de su orden
+(define (cartasIguales? card1 card2)
+  (equal? (list->set card1)(list->set card2))
+)
 
+;compararCardsSets
+;DOM: cardsSet(list de lists) X cardsSet
+;REC: cardsSet
+;Recusrsión: Natural
+;Resumen: Compara y "Resta" dos CardsSet.
+(define (compararCardsSets cardsSetA cardsSetB);A > B (pues B irá disminuyendo con cada recursión)
+  (if (< (length cardsSetA) (length cardsSetB));si A < B:
+      ;true: Llamamos a la función con los cardsSet "al revés"
+      (compararCardsSets cardsSetB cardsSetA)
+      ;false: sino, continuamos con la función
+      (if (not(equal? cardsSetB '())) ;si B no está vacío
+          ;true: Continúa
+          (if (cartasIguales? (car cardsSetA) (car cardsSetB));Si la primera carta de ambos sets es igual
+              ;true: Entonces hace un llamado recursivo sin la cabeza de ambos sets
+              (compararCardsSets (cdr cardsSetA)(cdr cardsSetB))
+              ;false: sino, "baraja" la primera carta de A y vuelve a intentar.
+              (compararCardsSets (append (cdr cardsSetA)(list (car cardsSetA))) cardsSetB)
+              )
+          ;false: Retorna A (sin las cartas de B)
+          (append '() cardsSetA)
+          )
+   )
+)
+;Ejemplos de uso:
+      ;(compararCardsSets (cardsSet '("0" "1" "2" "3" "4") 2 -1 randomFn) (cardsSet '("0" "1" "2" "3" "4") 2 1 randomFn))
+
+;missingCards
+;DOM: cardsSet
+;REC: cardsSet
+;Recursión: De cola
+;Resumen: A partir de un conjunto de cartas retorna el conjunto de cartas que hacen falta para que el set sea válido.
+(define (missingCards cardsSetA)
+  (if (not(equal? cardsSetA '()))
+      ;true
+      (if (not (< (length cardsSetA) (length (car cardsSetA))))
+          ;true
+          (compararCardsSets cardsSetA (cardsSet (elementosCardsSet cardsSetA '("0")) (length (car cardsSetA)) -1 randomFn))
+          ;false
+          (display "No puedo crear un cardsSet desde tan pocos elementos")
+          )
+      ;false
+      (append '() '())
+      )
+)
 
 ;Ejemplos de uso:
-      ;
-      ;
-      ;
+      ;(missingCards (cardsSet (list "0" "A" "B" "C") 2 -1 randomFn))
+      ;(missingCards (cardsSet '("0" "1" "2" "3" "4" "5" "6" "7") 3 3 randomFn))
+      ;(missingCards (cardsSet '("0" "1" "2" "3" "4") 2 2 randomFn))
 
-;
-;DOM: 
-;REC: 
-;Recursión:
+;strList
+;DOM: lista (con strings)
+;REC: string
+;Recursión: Natural
+;Resumen: Transforma una lista de strings a un string gigante
+(define (listToStr lista)
+  (if(not(equal? 0 (length lista)));si el largo de la lista es distinto de 0
+     ;true
+     (string-append " " (string-append (car lista) (listToStr (cdr lista))))
+     ;false
+     " "
+   )
+)
+
+;matrizToStr
+;DOM: list de lists
+;REC: string
+;Recursión: Natural
 ;Resumen:
+(define (matrizToStr lista)
+  (if(not(equal? 0 (length lista)));si el largo de la lista es distinto de 0
+     ;true
+     (string-append " " (string-append (string-append(string-append "(" (listToStr(car lista)))")") (matrizToStr (cdr lista))))
+     ;false
+     ""
+   )
+)
 
+;cardsSet->string
+;DOM: cardsSet (list de list)
+;REC: 
+;Recursión: De cola
+;Resumen:
+(define (cardsSet->string cardsSet)
+  (string-append "" (string-append (matrizToStr cardsSet))) ;strMatriz, función auxiliar definida en TDA-game
+)
 
 ;Ejemplos de uso:
-      ;
-      ;
-      ;
-
-;
-;DOM: 
-;REC: 
-;Recursión:
-;Resumen:
-
-
-;Ejemplos de uso:
-      ;
-      ;
-      ;
-
-;
-;DOM: 
-;REC: 
-;Recursión:
-;Resumen:
-
-
-;Ejemplos de uso:
-      ;
-      ;
-      ;
+      ;(cardsSet->string (cardsSet (list "0" "A" "B" "C") 2 -1 randomFn))
+      ;(cardsSet->string (cardsSet '("0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13") 4 -1 randomFn))
+      ;(cardsSet->string (cardsSet elements 3 4 rndFn))
